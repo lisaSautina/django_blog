@@ -7,12 +7,7 @@
         <p>{{ article.short_description }}</p>
         <small>{{ article.time_create }}</small>
         <hr>
-        <span>{{ article.category.title }}</span>
         <a href="{{ article.get_absolute_url }}">Подробнее</a>
-    
-    <!-- Для просмотра детальной статьи, мы из списка статей 
-    должны получать ссылку на полную новость, давайте проведем 
-    изменения в articles_list.html добавив ссылку на полную статью -->
-   
-        {% endfor %}
+        <span>{{ article.category.title }}</span>
+    {% endfor %}
 {% endblock %}

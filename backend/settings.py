@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'modules.blog.apps.BlogConfig',
+    'modules.services',
     'mptt',#для создания древовидных запросов, в нашем случае это у каждой категории статья, есть подкатегория
+    
 ]
 
 MIDDLEWARE = [
@@ -125,7 +127,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
-STATIC_ROOT = (BASE_DIR / 'static')#подключение статики, изображения, js, css, html
+STATIC_ROOT = (BASE_DIR / 'static')
+
+STATICFILES_DIRS = [BASE_DIR / 'templates/src']
 
 MEDIA_ROOT = (BASE_DIR / 'media')
 MEDIA_URL = '/media/'

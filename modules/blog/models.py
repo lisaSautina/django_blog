@@ -1,8 +1,11 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth import get_user_model
+from django.urls import reverse
+
 from mptt.models import MPTTModel, TreeForeignKey
-from django.urls import reverse #импортировали reverse для формирования правильной ссылки
+
+from modules.services.utils import unique_slugify
 
 
 class Category(MPTTModel):#модель категорий с вложенностью
@@ -49,14 +52,14 @@ class Article(models.Model):
         ('draft', 'Черновик')
     )
     title = models.CharField(verbose_name='Заголовок', max_length=255)
-    slug = models.SlugField(verbose_name='URL', max_length=255, blank=True, unique=True) #ссылка на материал, необязательно к заполнению
+    slug = models.CharField(verbose_name='Альт.название', max_length=255, blank=True, unique=True) #ссылка на материал, необязательно к заполнению
     category = TreeForeignKey('Category', on_delete=models.PROTECT, related_name='articles', verbose_name='Категория')
     short_description = models.TextField(verbose_name='Краткое описание', max_length=500)
     full_description = models.TextField(verbose_name='Полное описание')
     thumbnail = models.ImageField(
         verbose_name='Превью поста', 
         blank=True, 
-        upload_to='images/thumbnails/%Y/%m/%d/', 
+        upload_to='images/thumbnails/', 
         validators=[FileExtensionValidator(allowed_extensions=('png', 'jpg', 'webp', 'jpeg', 'gif'))]
     )
     status = models.CharField(choices=STATUS_OPTIONS, default='published', verbose_name='Статус поста', max_length=20)
@@ -81,3 +84,11 @@ class Article(models.Model):
         return reverse('articles_detail', kwargs={'slug': self.slug})
     # Для просмотра детальной статьи, мы из списка статей 
     # должны получать ссылку на полную новость
+    def save(self, *args, **kwargs):
+        #Сохранение полей модели при их отсутствии заполнения
+        if not self.slug:
+            self.slug = unique_slugify(self, self.title)
+        super().save(*args, **kwargs)
+        # В условии, если нет slug, то мы генерируем slug из заголовка, а если такой slug существует, то мы добавляем символы uuid4.
+        # *args и **kwargs позволяют функции принимать любое количество аргументов, что делает код более гибким и обобщенным
+ 

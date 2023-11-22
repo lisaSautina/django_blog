@@ -25,8 +25,8 @@ class CategoryAdmin(DraggableMPTTAdmin):#возможность скрывать
     # prepopulated_fields позволяет определить поля, 
     # которые получают значение основываясь на значениях других полей:
 
-@admin.register(Article)#регистрация модели в админке
+@admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
+    prepopulated_fields = {'slug': ('title',)} 
     #Мы добавили параметр prepopulated_fields, который позволяет с помощью
     # JS обрабатывать заголовок в реальном времени, конвертирует даже кириллицу.
