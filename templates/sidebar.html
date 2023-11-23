@@ -1,0 +1,47 @@
+{% load mptt_tags %}
+
+<div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Категории</h5>
+      {% full_tree_for_model blog.Category as categories %}
+      <p class="card-text">
+        <ul>
+            {% recursetree categories %}
+                <li>
+                 <a href="{{ node.get_absolute_url }}">{{ node.title }}</a>
+                </li>
+            
+                {% if not node.is_leaf_node %}<ul>{% endif %}
+                    {{children}}
+                {% if not node.is_leaf_node %}</ul>{% endif %}
+            {% endrecursetree %}
+        </ul>
+      </p>
+    </div>
+  </div>
+  <!-- Загружаем mptt теги в шаблон.
+Подгружаем дерево модели Category.
+Выводим все категории рекурсиво с вложенностью (children) -->
+<!-- Этот код на Django Template Language (DTL) использует библиотеку `django-mptt` для работы с древовидными структурами данных (MPTT - Modified Preorder Tree Traversal) и вывода категорий в виде карточки на веб-странице. Давайте разберем его по частям: -->
+
+<!-- 1. `{% load mptt_tags %}`:
+   - Этот тег загружает теги, связанные с библиотекой `django-mptt`, что позволяет использовать функции для работы с древовидными структурами данных.
+
+2. `<div class="card"> ... </div>`:
+   - Это блок кода, создающий карточку (`<div class="card">`) для отображения категорий.
+
+3. `{% full_tree_for_model blog.Category as categories %}`:
+   - Этот тег получает полное древо категорий модели `blog.Category` и сохраняет его в переменную `categories`.
+
+4. `{% recursetree categories %} ... {% endrecursetree %}`:
+   - Этот тег используется для рекурсивного перебора элементов древа.
+   - `{{ node.get_absolute_url }}`: Получает абсолютный URL для текущего узла.
+   - `{{ node.title }}`: Выводит название текущего узла.
+
+5. `{% if not node.is_leaf_node %}<ul>{% endif %} ... {% if not node.is_leaf_node %}</ul>{% endif %}`:
+   - Этот блок кода проверяет, является ли текущий узел листовым (без дочерних узлов) и, если нет, создает `<ul>` для дочерних узлов.
+
+6. `<ul> ... </ul>`:
+   - Это блок кода, содержащий неупорядоченный список, в который добавляются элементы категорий.
+
+Итак, код отображает карточку с категориями, используя библиотеку `django-mptt`. Каждая категория представлена в виде списка, а подкатегории вложены в соответствующие элементы списка. -->

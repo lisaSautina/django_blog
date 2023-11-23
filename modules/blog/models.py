@@ -40,6 +40,8 @@ class Category(MPTTModel):#модель категорий с вложеннос
     def __str__(self):#Возвращение заголовка статьи
         return self.title
 
+    def get_absolute_url(self):
+        return reverse('articles_by_category', kwargs={'slug': self.slug})
 
 User = get_user_model()
 
@@ -47,6 +49,16 @@ class Article(models.Model):
     """
     Модель постов для сайта
     """
+    class ArticleManager(models.Manager):
+        """
+        Кастомный менеджер для модели статей
+        """
+
+        def all(self):
+            """
+            Список статей (SQL запрос с фильтрацией для страницы списка статей)
+            """
+            return self.get_queryset().filter(status='published')
     STATUS_OPTIONS = (
         ('published', 'Опубликовано'), 
         ('draft', 'Черновик')
@@ -68,7 +80,7 @@ class Article(models.Model):
     author = models.ForeignKey(to=User, verbose_name='Автор', on_delete=models.SET_DEFAULT, related_name='author_posts', default=1)
     updater = models.ForeignKey(to=User, verbose_name='Обновил', on_delete=models.SET_NULL, null=True, related_name='updater_posts', blank=True)
     fixed = models.BooleanField(verbose_name='Зафиксировано', default=False)
-
+    objects = ArticleManager()
     class Meta:
         db_table = 'app_articles'
         ordering = ['-fixed', '-time_create'] #сначала новые, потом старые
