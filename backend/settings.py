@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'modules.blog.apps.BlogConfig',
+    'modules.system.apps.SystemConfig',
     'modules.services',
     'mptt',#для создания древовидных запросов, в нашем случае это у каждой категории статья, есть подкатегория
     'debug_toolbar',

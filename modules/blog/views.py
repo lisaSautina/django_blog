@@ -4,6 +4,11 @@ from .models import Article, Category
 
 from django.shortcuts import render
 from django.core.paginator import Paginator
+
+from django.views.generic import CreateView
+from .forms import ArticleCreateForm
+
+
 #Встроенный класс Paginator в Django сообщает, какую страницу запрашивать и сколько строк получать из базы данных.
 def articles_list(request):
     articles = Article.objects.all()
@@ -57,3 +62,23 @@ class ArticleByCategoryListView(ListView):
 # context_object_name - словарь для перебирания в шаблоне
 # def get_queryset - метод обработки qs, здесь мы получаем категорию по определенному slug, а после мы фильтруем qs статей по категории и возвращаем qs.
 # def get_context_data - в этом методе передаем <title></title> категории
+class ArticleCreateView(CreateView):
+    """
+    Представление: создание материалов на сайте
+    """
+    model = Article
+    template_name = 'blog/articles_create.html'
+    form_class = ArticleCreateForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Добавление статьи на сайт'
+        return context
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.save()
+        return super().form_valid(form)
+#     В get_context_data() передаем заголовок для <title> нашего шаблона.
+# В методе form_valid() валидируем нашу форму, а также сохраняем автором текущего пользователя на странице, 
+# которого получаем из запроса self.request.user

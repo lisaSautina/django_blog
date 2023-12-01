@@ -44,21 +44,17 @@ class Category(MPTTModel):#модель категорий с вложеннос
         return reverse('articles_by_category', kwargs={'slug': self.slug})
 
 User = get_user_model()
-
-class Article(models.Model):
-    """
-    Модель постов для сайта
-    """
-    class ArticleManager(models.Manager):
-        """
-        Кастомный менеджер для модели статей
-        """
-
+#это удобный способ получить модель пользователя, определенную в проекте Django. Вместо того, чтобы явно импортировать модель пользователя (from django.contrib.auth.models import User), get_user_model() возвращает модель пользователя, которая настроена в настройках проекта 
+class Article(models.Model): #Модель постов для сайта
+    class ArticleManager(models.Manager):#Кастомный менеджер для модели статей
         def all(self):
             """
             Список статей (SQL запрос с фильтрацией для страницы списка статей)
             """
-            return self.get_queryset().filter(status='published')
+            return self.get_queryset().select_related('author','category').filter(status='published')
+    # К методу all() кастомного менеджера модели я добавил до фильтрации 
+    # статьи метод: select_related() для ключа Foreign Key - Автора и 
+    # Категорий, так как со статьи мы ссылаемся на автора и категорию.
     STATUS_OPTIONS = (
         ('published', 'Опубликовано'), 
         ('draft', 'Черновик')
@@ -70,7 +66,7 @@ class Article(models.Model):
     full_description = models.TextField(verbose_name='Полное описание')
     thumbnail = models.ImageField(
         verbose_name='Превью поста', 
-        blank=True, 
+        blank=True, #может быть пустым
         upload_to='images/thumbnails/', 
         validators=[FileExtensionValidator(allowed_extensions=('png', 'jpg', 'webp', 'jpeg', 'gif'))]
     )
@@ -86,7 +82,7 @@ class Article(models.Model):
         ordering = ['-fixed', '-time_create'] #сначала новые, потом старые
         indexes = [models.Index(fields=['-fixed', '-time_create', 'status'])]# индексирование полей, чтобы ускорить результаты сортировки.
         verbose_name = 'Статья'
-        verbose_name_plural = 'Статьи'
+        verbose_name_plural = 'Статьи' #индексирование полей, чтобы ускорить результаты сортировки.
 
     def __str__(self):
         return self.title
