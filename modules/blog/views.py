@@ -1,13 +1,14 @@
 from django.db.models.query import QuerySet
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from .models import Article, Category
 
 from django.shortcuts import render
 from django.core.paginator import Paginator
 
 from django.views.generic import CreateView
-from .forms import ArticleCreateForm
+from .forms import ArticleCreateForm, ArticleUpdateForm
 
+from django.urls import reverse_lazy
 
 #Встроенный класс Paginator в Django сообщает, какую страницу запрашивать и сколько строк получать из базы данных.
 def articles_list(request):
@@ -82,3 +83,32 @@ class ArticleCreateView(CreateView):
 #     В get_context_data() передаем заголовок для <title> нашего шаблона.
 # В методе form_valid() валидируем нашу форму, а также сохраняем автором текущего пользователя на странице, 
 # которого получаем из запроса self.request.user
+class ArticleUpdateView(UpdateView):
+    #Представление: обновления материала на сайте
+    model = Article
+    template_name = 'blog/articles_update.html'
+    context_object_name = 'article'
+    form_class = ArticleUpdateForm
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Обновление статьи: {self.object.title}'
+        return context
+    
+    def form_valid(self, form):
+        # form.instance.updater = self.request.user
+        form.save()
+        return super().form_valid(form)
+    
+class ArticleDeleteView(DeleteView):
+    model = Article
+    success_url = reverse_lazy('home')
+    context_object_name = 'article'
+    template_name = 'blog/articles_delete.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Удаление статьи: {self.object.title}'
+        return context
+    # В свойстве success_url мы использовали переход после удаления статьи 
+    # на страницу со всеми статьями с помощью функции reverse_lazy()

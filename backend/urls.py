@@ -12,4 +12,4 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns = [path('__debug__/', include('debug_toolbar.urls'))] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    #тут меняем debug на true(по дефолту он фолз)
+    #Для работы media в режиме DEBUG = True нам необходимо добавить следующее в backend/urls.py

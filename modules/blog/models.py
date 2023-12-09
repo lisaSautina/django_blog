@@ -19,20 +19,15 @@ class Category(MPTTModel):#модель категорий с вложеннос
         null=True,
         blank=True,
         db_index=True,
-        related_name='children',
+        related_name='children',#для определения имени обратной связи в отношении ForeignKey или ManyToManyField
         verbose_name='Родительская категория'
     )
 
     class MPTTMeta:
-        """
-        Сортировка по вложенности
-        """
+        #Сортировка по вложенности
         order_insertion_by = ('title',)
-
     class Meta:
-        """
-        Сортировка, название модели в админ панели, таблица в данными
-        """
+        #Сортировка, название модели в админ панели, таблица в данными
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         db_table = 'app_categories'
